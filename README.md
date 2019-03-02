@@ -35,10 +35,10 @@ deserializes it.
 2. It tries to find a cluster record in it with name `kubernetes`. This
 record corresponds to the bare-metal Kubernetes cluster.
 3. It uses `server` field and assuming that it has a correct URI format, it
-tries to extract the server host name. Usually it's the IP address you used in
+tries to extract the server hostname. Usually, it's the IP address you used in
 the SSH call.
 4. It creates a cluster record in the local configuration with name
-`kubernetes-[host_name]` where `host_name` is the host name extracted on
+`kubernetes-[host_name]` where `host_name` is the hostname extracted on
 the previous step. All the other fields like `certificate-authority-data`
 and `server` are copied from the source record.
 5. It tries to find a user record with name `kubernetes-admin` and when it succeeds
