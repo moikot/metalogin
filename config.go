@@ -52,6 +52,13 @@ func Unmarshal(data []byte) (*Config, error) {
 	return config, nil
 }
 
+func NewConfig() *Config {
+	return &Config{
+		APIVersion: "v1",
+		Kind:       "Config",
+	}
+}
+
 func (c *Config) GetClusterEntry(clusterName string) *ClusterEntry {
 	for _, cluster := range c.Clusters {
 		if cluster.Name == clusterName {

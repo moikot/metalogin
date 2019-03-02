@@ -50,12 +50,19 @@ func Run(configFile string) error {
 		return errors.Wrapf(err, "failed to marshal result configuration")
 	}
 
+	var perm os.FileMode
 	info, err := os.Stat(configFile)
 	if err != nil {
-		return errors.Wrapf(err, "failed to get information about `%s`", configFile)
+		if os.IsNotExist(err) {
+			perm = 0600 // User read/write only
+		} else {
+			return errors.Wrapf(err, "failed to get information about `%s`", configFile)
+		}
+	} else {
+		perm = info.Mode().Perm()
 	}
 
-	err = ioutil.WriteFile(configFile, resConfigBytes, info.Mode().Perm())
+	err = ioutil.WriteFile(configFile, resConfigBytes, perm)
 	if err != nil {
 		return errors.Wrapf(err, "failed to write result configuration")
 	}
@@ -112,6 +119,11 @@ func ReadFromInput() ([]byte, error) {
 }
 
 func ReadDestinationConfig(configFile string) (*Config, error) {
+
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		return NewConfig(), nil
+	}
+
 	configBytes, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read `%s`", configFile)
