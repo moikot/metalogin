@@ -69,12 +69,16 @@ func ReadSourceConfig() (*Config, error) {
 		return nil, errors.Wrapf(err, "failed to read configuration from the input stream")
 	}
 
+	if len(configBytes) == 0 {
+		return nil, errors.New("no configuration in the input stream")
+	}
+
 	conf, err := Unmarshal(configBytes)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to unmarshal configuration from the input stream")
 	}
 
-	return conf, err
+	return conf, nil
 }
 
 func ReadFromInput() ([]byte, error) {
@@ -118,5 +122,5 @@ func ReadDestinationConfig(configFile string) (*Config, error) {
 		return nil, errors.Wrapf(err, "failed to unmarshal `%s`", configFile)
 	}
 
-	return conf, err
+	return conf, nil
 }
