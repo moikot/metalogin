@@ -19,7 +19,7 @@ You can also build and run it locally if you have a Golang environment.
 In such case you need to execute
 
 ```bash
-go get hithub.com/moikot/metalogin
+go get github.com/moikot/metalogin
 ssh [user]@[cluster-IP] "cat ~/.kube/config" | ~/go/bin/metalogin -c ~/.kube/config
 
 ```
