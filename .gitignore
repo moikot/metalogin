@@ -1,0 +1,15 @@
+### Go ###
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Editors
+/.idea/
+
+# Vendoring
+/vendor/
