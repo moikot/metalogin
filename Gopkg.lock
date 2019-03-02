@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
@@ -10,6 +16,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c5fb90c08dfd63f786316efe19c5d2fd508a3ad1712184830052d4f3db861a84"
+  inputs-digest = "1469c35a7e2f6532c893fccb81f3f68b3edd1615183d11af1a8fcedcf2f9a90e"
   solver-name = "gps-cdcl"
   solver-version = 1
