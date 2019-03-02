@@ -8,7 +8,8 @@ Kubernetes cluster via SSH and creates a context in your local ~/.kube/config.
 Literally, after executing this:
 
 ```bash
-ssh [user]@[cluster-IP] "cat ~/.kube/config" | docker run -i --rm -v ~/.kube/:/kube moikot/metalogin -c /kube/config
+ssh [user]@[cluster-IP] "cat ~/.kube/config" \
+  | docker run -i --rm -v ~/.kube/:/kube moikot/metalogin -c /kube/config
 ```
 
 You should be able to execute `kubectl get nodes`. No installation, no fiddling 
