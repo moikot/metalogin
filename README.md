@@ -1,6 +1,6 @@
 # Metalogin
 
-[![Build Status](https://travis-ci.org/moikot/metalogin.svg?branch=master)](https://travis-ci.org/moikot/metalogin)
+[![Build Status](https://travis-ci.com/moikot/metalogin.svg?branch=master)](https://travis-ci.com/moikot/metalogin)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moikot/metalogin)](https://goreportcard.com/report/github.com/moikot/metalogin)
 [![Coverage Status](https://coveralls.io/repos/github/moikot/metalogin/badge.svg?branch=master)](https://coveralls.io/github/moikot/metalogin?branch=master)
 
