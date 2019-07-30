@@ -12,7 +12,7 @@ a context in your local ~/.kube/config.
 Literally, after executing this:
 
 ```bash
-ssh [user]@[cluster-IP] "sudo cat /etc/kubernetes/admin.conf" \
+ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR [user]@[cluster-IP] "sudo cat /etc/kubernetes/admin.conf" \
   | docker run -i --rm -v ~/.kube/:/kube moikot/metalogin -c /kube/config
 ```
 
@@ -25,7 +25,7 @@ In such case you need to run the following commands:
 
 ```bash
 go get github.com/moikot/metalogin
-ssh [user]@[cluster-IP] "sudo cat /etc/kubernetes/admin.conf" | ~/go/bin/metalogin -c ~/.kube/config
+ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR [user]@[cluster-IP] "sudo cat /etc/kubernetes/admin.conf" | ~/go/bin/metalogin -c ~/.kube/config
 
 ```
 
