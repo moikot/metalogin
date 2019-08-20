@@ -1,31 +1,23 @@
-ARG GO_VERSION=1.10
+FROM --platform=$BUILDPLATFORM moikot/golang-dep:1.12 as build-env
 
-FROM golang:${GO_VERSION}-alpine as build-env
+# xx wraps go to automatically configure $GOOS, $GOARCH, and $GOARM
+# based on TARGETPLATFORM provided by Docker.
+COPY --from=tonistiigi/xx:golang / /
 
-ARG DEP_VERSION=0.4.1
-ARG APP_FOLDER=/go/src/github.com/moikot/metalogin/
+ARG APP_FOLDER
 
 ADD . ${APP_FOLDER}
 WORKDIR ${APP_FOLDER}
 
-# Update root certificates, curl and git
-RUN apk add -U --no-cache ca-certificates curl git
-
-# Installs Go Dep
-RUN curl \
-    -fsSL \
-    -o /usr/local/bin/dep \
-    https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 \
-    && chmod \
-    +x /usr/local/bin/dep
-
 RUN dep ensure -vendor-only
 
-# Compile independant executable
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /bin/main .
+# Compile independent executable using go wrapper from xx:golang
+ARG TARGETPLATFORM
+RUN CGO_ENABLED=0 go build -a -o /bin/main .
 
 FROM scratch
 
+COPY --from=build-env /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build-env /bin/main /
 
 ENTRYPOINT ["/main"]

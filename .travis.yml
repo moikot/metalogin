@@ -1,30 +1,69 @@
-# This is a weird way of telling Travis to use the fast container-based test
-# runner instead of the slow VM-based runner.
-sudo: false
+dist: bionic
+os: linux
+language: shell
 
 language: go
 
-# Only the last two Go releases are supported by the Go team with security
-# updates. Any older versions be considered deprecated. Don't bother testing
-# with them.
 go:
-- 1.10.x
-- 1.9.x
+  - 1.12.x
 
-# Only clone the most recent commit.
+services:
+  - docker
+
+env:
+  global:
+    - DOCKER_PLATFORMS="linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6"
+    - APP_FOLDER=/go/src/github.com/moikot/metalogin/
+
 git:
   depth: 1
 
 before_install:
-- go get github.com/mattn/goveralls
+  - go get github.com/mattn/goveralls
 
-# Don't email me the results of the test runs.
+stages:
+  - name: build and test
+    if: tag IS blank
+  - name: deploy
+    if: branch = master OR tag =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/
+
+matrix:
+  include:
+
+    - stage: build and test
+      script:
+        # Restore packages using moikot/golang-dep
+        - >-
+          docker run --rm -v $(pwd):${APP_FOLDER} -w ${APP_FOLDER}
+          -u $(id -u ${USER}):$(id -g ${USER})
+          moikot/golang-dep ensure -vendor-only
+        # Run all the tests and report the coverage
+        - go test -covermode=count -coverprofile=profile.cov -coverpkg=./... ./...
+        - $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
+
+    - stage: deploy
+      script:
+        # Get scripts for building Docker images
+        - id=$(docker create moikot/docker-tools)
+        - docker cp $id:/scripts.sh /tmp/scripts.sh && docker rm -v $id
+        # Update docker to the latest version and enable BuildKit
+        - /tmp/scripts.sh update_docker
+        # Login to Doker Hub
+        - >-
+          echo "${DOCKER_PASSWORD}" |
+          docker login -u "${DOCKER_USERNAME}" --password-stdin
+        # Build multi-platform image and push it
+        - >-
+          /tmp/scripts.sh build_images
+          ${TRAVIS_REPO_SLUG} ${TRAVIS_BRANCH} ${DOCKER_PLATFORMS}
+          --push --build-arg APP_FOLDER=${APP_FOLDER}
+        # Push readme file for a tag
+        - |
+          if [ "${TRAVIS_BRANCH}" != "master" ]; then
+              /tmp/scripts.sh push_readme \
+              ${TRAVIS_REPO_SLUG} README.md \
+              ${DOCKER_USERNAME} ${DOCKER_PASSWORD}
+          fi
+
 notifications:
   email: false
-
-# script always runs to completion (set +e). If we have linter issues AND a
-# failing test, we want to see both. Configure golangci-lint with a
-# .golangci.yml file at the top level of your repo.
-script:
-# Run all the tests and report the coverage
-- $GOPATH/bin/goveralls -service=travis-ci
