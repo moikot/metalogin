@@ -39,7 +39,7 @@ matrix:
           moikot/golang-dep ensure -vendor-only
         # Run all the tests and report the coverage
         - go test -covermode=count -coverprofile=profile.cov -coverpkg=./... ./...
-        - $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
+        - $GOPATH/bin/goveralls -service=travis-ci
 
     - stage: deploy
       script:
